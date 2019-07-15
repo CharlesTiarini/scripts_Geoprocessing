@@ -1,0 +1,24 @@
+gdalbuildvrt Y1985.vrt 1985/*.tif -srcnodata 0 -vrtnodata 0
+gdal_translate Y1985.vrt Y1985.tif -co COMPRESS=LZW -co BIGTIFF=YES -co TILED=YES -a_nodata 0
+gdal_calc.py -A pasture2.tif --calc="(A > 5000)" --type=Byte --co="COMPRESS=LZW" --co="TILED=True" --outfile=pasture2-5000.tif
+gdaladdo -ro pasture2-5000.tif 2 4 8
+
+
+
+smb://10.0.0.26/
+
+Montar mosaico:
+gdal_merge.py -o ../pantanal.tif -co TILED=Yes -co COMPRESS=lzw -co BIGTIFF=Yes *.tif
+
+
+montar piramide:
+gdaladdo --config USE_RRD=YES -ro pantanal.tif 2 4 8
+
+
+
+ssh charles.tiarini@10.0.0.26
+
+
+nohup COMANDO &> COMANDO_ARQUIVO.out &
+
+tail -f COMANDO_ARQUIVO.out
