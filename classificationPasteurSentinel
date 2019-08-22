@@ -24,21 +24,34 @@ for grid in GRID_LIST:
   rfNTrees = 300
   rfBagFraction = 0.5 
   rfVarPersplit = 6
+  seed = 1
 
   classificationArea = SENTINEL_GRID.filter(ee.Filter.eq('gridName',MGRS_TILE))
 
   samplingArea = SENTINEL_GRID.filterBounds(classificationArea.geometry().buffer(150000))
 
   localClass = ["Agricultura Anual", "Agricultura Perene", "Apicum", "Aquicultura", "Área Úmida Natural Não Florestal", "Cana-de-açucar", "Cultura Anual", "Cultura Perene", "Cultura Semi-Perene", "Formação Campestre", "Formação Florestal", "Formação Savânica", "Mangue", "Mineração", "Outra Formação Natural Não Florestal", "Pastagem Cultivada", "Pastagem Natural", "Silvicultura", "Vegetação nativa"]
-  globalClass = ["Água", "Urbano", "Areia", "Afloramento Rochoso"]
+  globalClass = ["Água", "Urbano", "Areia"]
 
-  # allPoints = POINT_SAMPLES.randomColumn('random', seed)
-  localSamples = TRAIN_DATA.filterBounds(samplingArea).filter(ee.Filter.inList('orig_class',localClass))
+  
+  localSamplesAll = TRAIN_DATA.filterBounds(samplingArea)
+  localSamples = localSamplesAll.filter(ee.Filter.inList('orig_class',localClass))
   globalSamples = TRAIN_DATA.filter(ee.Filter.inList('orig_class',globalClass))
 
-  trainSamples = localSamples.merge(globalSamples)
+  pastureGlobal = TRAIN_DATA.filter(ee.Filter.inList('orig_class', ['Pastagem'])).randomColumn('random', seed).limit(2500, 'random')
+  pereneGlobal = TRAIN_DATA.filter(ee.Filter.inList('orig_class', ['Agricultura Perene'])).randomColumn('random', seed).limit(2000, 'random')
+  #notPasture = localSamplesAll.filter(ee.Filter.inList('orig_class', ['Pastagem'])).randomColumn('random', seed).limit(1000, 'random')
 
-  trainSamples = TRAIN_DATA.select(classFieldName).filterBounds(samplingArea)
+
+  #urbanSamples = TRAIN_DATA.filter(ee.Filter.inList('orig_class', 'Urbano')).randomColumn('random', seed).limit(300, 'random')
+  #urbanSamples = TRAIN_DATA.filter(ee.Filter.inList('orig_class', 'Agricultura Anual')).randomColumn('random', seed).limit(300, 'random')
+
+
+  globalSamplesRandom = globalSamples.randomColumn('random', seed).limit(1500, 'random')
+
+  
+
+  trainSamples = localSamplesAll.merge(globalSamplesRandom).merge(pastureGlobal).merge(pereneGlobal).select(classFieldName)
    
   def samplingFn(obj):
     neitiles = ee.Feature(obj).get('gridName')
@@ -161,7 +174,7 @@ for grid in GRID_LIST:
 
   pastureContinuousResult = classify()
     
-  pastureContinuousFilename =  'Pasture_Continuous_' + str(MGRS_TILE) + '_' + str(year)
+  pastureContinuousFilename =  'Pasture_Continuous_Global2_5kPastureGlobal2k_perene1k_noRock' + str(MGRS_TILE) + '_' + str(year)
  
   image = pastureContinuousResult.multiply(10000).int16()
   description = pastureContinuousFilename
@@ -169,7 +182,8 @@ for grid in GRID_LIST:
   region = ee.Geometry.Polygon(classificationArea.geometry().bounds().coordinates()).getInfo()["coordinates"]
   scale = 20
   maxPixels = 1.0E13
+  pasta = 'PastagemV10'
 
-  task = ee.batch.Export.image.toDrive(image, description, None, fileNamePrefix, None, region, scale, None, None, maxPixels)
+  task = ee.batch.Export.image.toDrive(image, description, pasta, fileNamePrefix, None, region, scale, None, None, maxPixels)
 
   task.start()
