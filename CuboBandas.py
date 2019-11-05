@@ -25,12 +25,12 @@ for Inicio in Anos:
   agua = agua.divide(agua)
   agua = agua.unmask()
 
-  mask = PRODES_ANTROPICO.mask(PRODES_ANTROPICO.lte(Inicio))
-  mask = mask.add(1)
-  mask = mask.divide(mask)
-  mask = mask.unmask()
+  accu = PRODES_ANTROPICO.mask(PRODES_ANTROPICO.lte(Inicio))
+  accu = accu.add(1)accu
+  accu = accu.divide(accu)
+  accu = accu.unmask()
 
-  universo = mask.add(agua)
+  mask = accu.add(agua)
 
   for pathrow in PATHROW_LIST:
     
@@ -49,14 +49,14 @@ for Inicio in Anos:
     for band_name in BANDS:
 
       first = ee.Image()
-      b4Stack = imgs.iterate(inter, first)
+      bands_stack = imgs.iterate(inter, first)
 
-      b4Stack = ee.Image(b4Stack)
-      b4Stack = b4Stack.multiply(10000)
-      b4Stack = b4Stack.toInt16()
-      b4Stack = b4Stack.clip(sceneGeometry)
+      bands_stack = ee.Image(bands_stack)
+      bands_stack = bands_stack.multiply(10000)
+      bands_stack = bands_stack.toInt16()
+      bands_stack = bands_stack.clip(sceneGeometry)
 
-      b4Stack = b4Stack.mask(universo.eq(0))
+      bands_stack = bands_stack.mask(mask.eq(0))
       
       boundary = ee.Feature(scene).geometry().bounds().getInfo()['coordinates']
 
@@ -70,6 +70,6 @@ for Inicio in Anos:
         'folder': 'CuboBandas_'+str(Inicio)
         }
 
-      task = ee.batch.Export.image.toDrive(b4Stack, str(Inicio)+"_"+str(pathrow)+"_"+str(band_name), **task_config)
+      task = ee.batch.Export.image.toDrive(bands_stack, "20"+str(Inicio+1)+"_"+str(pathrow)+"_"+str(band_name), **task_config)
 
       task.start()
