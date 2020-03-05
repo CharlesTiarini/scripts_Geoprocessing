@@ -1,0 +1,3 @@
+drive init
+
+drive pull -ignore-name-clashes -ignore-conflict -no-prompt PastagemBrasil_20m_v1
