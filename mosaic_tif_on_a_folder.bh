@@ -1,0 +1,10 @@
+#!/bin/bash
+#chamar comando 'bash' e não 'sh'
+
+for ano in {1985..2018}
+do
+  echo $ano
+  gdalbuildvrt mosaic_"$ano".vrt mosaic_"$ano"* -srcnodata 0 -vrtnodata 0
+  gdal_translate mosaic_"$ano".vrt mosaic_"$ano".tif -co COMPRESS=LZW -co BIGTIFF=YES -co TILED=YES -a_nodata 0
+
+done
