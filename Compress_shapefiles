@@ -1,0 +1,21 @@
+## Script para compactação de arquivos shapefiles
+## Criado por Charles Tiarini - GeoCode Mapeamento Ambiental
+
+import os
+import zipfile
+
+path = os.getcwd()+('/data')
+files = os.listdir(path)
+
+extensions = ['.cpg', '.dbf', '.prj', '.shp', '.shx']
+
+file_name=sorted(list(set([x.split('.')[0] for x in files])))
+
+for shp in file_name:
+	print('\nIniciando Compressão do shape: '+shp)
+	shapefiles = [shp+ex for ex in extensions]
+
+	with zipfile.ZipFile(shp+'.zip', 'w') as zipMe:
+		for file in shapefiles:
+			filepath = path+'/'+file
+			zipMe.write(filepath, file, compress_type=zipfile.ZIP_DEFLATED)
