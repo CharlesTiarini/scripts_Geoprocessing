@@ -1,0 +1,19 @@
+import geopandas as gpd
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+
+directory = '/home/cht/Documentos/TNC/Dados/CAR/car_arg_sicar_original_v202002/'
+
+dtypes = ['NASCENTE_OLHO_DAGUA.zip', 'HIDROGRAFIA.zip', 'APP.zip', 'APP.zip', 'AREA_CONSOLIDADA.zip', 'AREA_IMOVEL.zip', 'AREA_POUSIO.zip',  'HIDROGRAFIA.zip', 'NASCENTE_OLHO_DAGUA.zip', 'RESERVA_LEGAL.zip', 'SERVIDAO_ADMINISTRATIVA.zip', 'USO_RESTRITO.zip', 'VEGETACAO_NATIVA.zip', 'VEREDA.zip']
+muns = ['go_altohorizonte_out2020', 'go_amaralina_out2020', 'go_amorinopolis', 'go_aragarcas_out2020', 'go_araguapaz_out2020', 'go_arenopolis_out2020', 'go_aruana_out2020', 'go_aurilandia_out2020', 'go_baliza_out2020', 'go_bomjardimdegoias_out2020', 'go_bonopolis_out2020', 'go_britania_out2020', 'go_buritidegoias_out2020', 'go_cachoeiradegoias_out2020', 'go_caiaponia_out2020', 'go_camposverdes_out2020', 'go_corregodoouro_out2020', 'go_crixas_out2020', 'go_diorama_out2020', 'go_doverlandia_out2020', 'go_faina_out2020', 'go_fazendanova_out2020', 'go_firminopolis_out2020', 'go_goias_out2020', 'go_guarinos_out2020', 'go_ipora_out2020', 'go_israelandia_out2020', 'go_itapaci_out2020', 'go_itapirapua_out2020', 'go_iurapuru_out2020', 'go_ivolandia_out2020', 'go_jaupaci_out2020', 'go_jussara_out2020', 'go_mararosa_out2020', 'go_matrincha_out2020', 'go_mineiros_out2020', 'go_moipora_out2020', 'go_montesclarosdegoias_out2020', 'go_mossamedes_out2020', 'go_mozarlandia_out2020', 'go_mundonovo_out2020', 'go_mutunopolis_out2020', 'go_novaamerica_out2020', 'go_novacrixas_out2020', 'go_novacrixas_out2020', 'go_novaiguacudegoias_out2020', 'go_novobrasil_out2020', 'go_novoplanalto_out2020', 'go_palestinadegoias_out2020', 'go_parauna_out2020', 'go_pilardegoias_out2020', 'go_piranhas_out2020', 'go_porangatu_out2020', 'go_portelandia_out2020', 'go_sanclerlandia_out2020', 'go_santafedegoias_out2020', 'go_santaritadoaraguaia_out2020', 'go_santaterezinhadegoias_out2020', 'go_saojoaodaparauna_out2020', 'go_saoluisdemontesbelos_out2020', 'go_saomigueldoaraguaia_out2020', 'mt_aguaboa_out2020', 'mt_altoaraguaia_out2020', 'mt_altoboavista_out2020', 'mt_altogarcas_out2020', 'mt_altotaquari_out2020', 'mt_araguaiana_out2020', 'mt_araguainha_out2020', 'mt_barradosgarcas_out2020', 'mt_bomjesusdoaraguaia_out2020', 'mt_campinapolis_out2020', 'mt_campoverde_out2020', 'mt_canabravadonorte_out2020', 'mt_canarana_out2020', 'mt_cocalinho_out2020', 'mt_confresa_out2020', 'mt_domaquino_out2020', 'mt_generalcarneiro_out2020', 'mt_guiratinga_out2020', 'mt_luciara_out2020', 'mt_novanazare_out2020', 'mt_novaxavantina_out2020', 'mt_novosantoantonio_out2020', 'mt_novosaojoaquim_out2020', 'mt_pontaldoaraguaia_out2020', 'mt_pontebranca_out2020', 'mt_portoalegredonorte_out2020', 'mt_poxoreu_out2020', 'mt_primaveradoleste_out2020', 'mt_ribeiraocascalheira_out2020', 'mt_ribeiraozinho_out2020', 'mt_santaterezinha_out2020', 'mt_santoantoniodoleste_out2020', 'mt_saofelixdoaraguaia_out2020', 'mt_serranovadourada_out2020', 'mt_tesouro_out2020', 'mt_torixoreu_out2020', 'mt_vilarica_out2020', 'to_abreulandia_out2020', 'to_aliancadotocantins_out2020', 'to_formosodoaraguaia_out2020', 'to_goianorte_out2020', 'to_itaporadotocantins_out2020', 'to_juarina_out2020', 'to_lagoadaconfusao_out2020', 'to_luzinopolis_out2020', 'to_marianopolis_out2020', 'to_montesantodotocantins_out2020', 'to_muricilandia_out2020', 'to_nazare_out2020', 'to_novaolinda_out2020', 'to_novarosalandia_out2020', 'to_paraisodotocantins_out2020', 'to_paudarco_out2020', 'to_pequizeiro_out2020', 'to_piraque_out2020', 'to_pium_out2020', 'to_riachinho_out2020', 'to_sandolandia_out2020', 'to_santafedoaraguaia_out2020',  'to_saobentodotocantins_out2020', 'to_talisma_out2020', 'to_wanderlandia_out2020', 'to_xambioa_out2020']
+
+paths = list(map(lambda mun: directory+mun+'/'+dtypes[0], muns))
+
+
+gdf_list = []
+for path in paths:
+    gdf_list.append(gpd.read_file(path))
+    full_gdf = pd.concat(gdf_list)
+    
+full_gdf.to_file('nascentes.shp')
